@@ -1,0 +1,39 @@
+# framework/config/order_processing_screen.yaml
+
+order_entry_main:
+  screen_name: "Order Entry - Main"
+  description: "Primary order entry screen with order total calculation"
+  
+  indicators:
+    - "Order Entry"
+    - text: "Order #"
+      row: 1
+      col: 5
+    - text: "System Ready"
+      row: 24
+      col: 1
+  
+  handlers:
+    - name: "find_error"
+      type: "text_block_search"
+      search_term: "ERROR"
+      start_row: 1
+      end_row: 10
+      case_sensitive: false
+      required: false
+    
+    - name: "extract_total"
+      type: "extract_number"
+      row: 20
+      col: 50
+      length: 10
+      decimal_places: 2
+      required: true
+  
+  fields:
+    order_id:
+      label: "Order ID"
+      tabs_to_reach: 0
+    customer_id:
+      label: "Customer ID"
+      tabs_to_reach: 1

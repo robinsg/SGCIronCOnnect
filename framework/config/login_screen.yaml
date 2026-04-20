@@ -1,0 +1,27 @@
+# framework/config/login_screen.yaml
+
+login_screen:
+  screen_name: "Sign On"
+  description: "Standard IBM i Sign On screen"
+  
+  indicators:
+    - "Sign On"
+    - text: "User  . . . . . . . . . . . . . . ."
+      row: 6
+      col: 17
+    - text: "Password  . . . . . . . . . . . . ."
+      row: 7
+      col: 17
+  
+  fields:
+    user:
+      label: "User"
+      tabs_to_reach: 0
+      max_length: 10
+    password:
+      label: "Password"
+      tabs_to_reach: 1
+      max_length: 10
+      
+  control_keys:
+    submit: "Enter"

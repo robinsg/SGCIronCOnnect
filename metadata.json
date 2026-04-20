@@ -1,0 +1,6 @@
+{
+  "name": "SGCIronConnect",
+  "description": "An enterprise-grade automation framework for IBM i (TN5250) terminal sessions using Python, libtmux, and Robot Framework.\n\nThe app is designed to automate login and screen verification on IBM i LPARs which has been cloned using external storage snapshots, specifically aimed at testing and verify IBM FlashSystem SafeGuarded Copy snapshots.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
