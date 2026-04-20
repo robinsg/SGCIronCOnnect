@@ -34,6 +34,25 @@ class BaseScreen:
         """
         Mandatory check with handler support.
         """
+        if not self.matches():
+            # For backward compatibility and strict enforcement in verify()
+            # We re-run logic or just raise a generic error if matches() logic is moved
+            # Let's keep the logic here for simplicity but allow a non-throwing version
+            self._do_verify(raise_error=True)
+        else:
+            self._do_verify(raise_error=False)
+
+    def matches(self) -> bool:
+        """
+        Returns True if the current terminal buffer matches the screen indicators.
+        """
+        try:
+            self._do_verify(raise_error=True)
+            return True
+        except ScreenMismatchError:
+            return False
+
+    def _do_verify(self, raise_error: bool = True):
         buffer = self.driver.get_buffer()
         buffer_text = "\n".join(buffer)
         
@@ -41,9 +60,11 @@ class BaseScreen:
         for indicator in self.indicators:
             if isinstance(indicator, str):
                 if indicator not in buffer_text:
-                    raise ScreenMismatchError(
-                        f"Expected global indicator '{indicator}' not found for screen '{self.screen_name}'"
-                    )
+                    if raise_error:
+                        raise ScreenMismatchError(
+                            f"Expected global indicator '{indicator}' not found for screen '{self.screen_name}'"
+                        )
+                    return False
             elif isinstance(indicator, dict):
                 text = indicator.get('text', '')
                 try:
@@ -59,24 +80,30 @@ class BaseScreen:
                 target_col = col - 1
 
                 if target_row >= len(buffer):
-                    raise ScreenMismatchError(f"Row {row} is out of bounds.")
+                    if raise_error:
+                        raise ScreenMismatchError(f"Row {row} is out of bounds.")
+                    return False
 
                 width, _ = self.driver.get_dimensions()
                 row_content = buffer[target_row].ljust(width) 
                 actual_text = row_content[target_col:target_col + len(text)]
 
                 if actual_text != text:
-                    raise ScreenMismatchError(
-                        f"Positional mismatch at R{row}C{col}: Expected '{text}', found '{actual_text}'"
-                    )
+                    if raise_error:
+                        raise ScreenMismatchError(
+                            f"Positional mismatch at R{row}C{col}: Expected '{text}', found '{actual_text}'"
+                        )
+                    return False
         
         # 2. Input inhibited check
         if self.driver.is_input_inhibited():
-            raise InputInhibitedError(f"Terminal is inhibited on screen '{self.screen_name}'")
+            if raise_error:
+                raise InputInhibitedError(f"Terminal is inhibited on screen '{self.screen_name}'")
+            return False
         
         # 3. Execute handlers
         dimensions = self.driver.get_dimensions()
-        self.handler_results = {}
+        results = {}
         
         for handler_config in self.handlers_config:
             handler_type = handler_config.get('type')
@@ -87,17 +114,25 @@ class BaseScreen:
                 result = HandlerRegistry.execute_handler(
                     handler_type, buffer, handler_config, dimensions
                 )
-                self.handler_results[handler_name] = result
+                results[handler_name] = result
                 
                 if required and not result.get('success', False):
-                    raise ScreenMismatchError(
-                        f"Required handler '{handler_name}' failed: {result.get('error', 'Unknown error')}"
-                    )
+                    if raise_error:
+                        raise ScreenMismatchError(
+                            f"Required handler '{handler_name}' failed: {result.get('error', 'Unknown error')}"
+                        )
+                    return False
             except Exception as e:
                 if required:
-                    raise ScreenMismatchError(f"Handler '{handler_name}' error: {str(e)}")
+                    if raise_error:
+                        raise ScreenMismatchError(f"Handler '{handler_name}' error: {str(e)}")
+                    return False
                 else:
-                    self.handler_results[handler_name] = {'success': False, 'error': str(e)}
+                    results[handler_name] = {'success': False, 'error': str(e)}
+        
+        # Only store results if we verified successfully
+        self.handler_results = results
+        return True
 
     def fill_field(self, field_name: str, value: str, tabs_override: Optional[int] = None):
         """Fills a field based on its YAML definition."""

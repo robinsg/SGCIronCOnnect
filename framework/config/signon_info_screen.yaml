@@ -1,0 +1,17 @@
+# framework/config/signon_info_screen.yaml
+
+signon_info:
+  screen_name: "Sign-on Information"
+  description: "Optional information screen shown after sign-on"
+  
+  indicators:
+    - "Sign-on Information"
+    - text: "Previous sign-on . . . . . . . . . . . . . . . :"
+      row: 3
+      col: 2
+    - text: "Press Enter to continue."
+      row: 21
+      col: 2
+  
+  control_keys:
+    continue: "Enter"

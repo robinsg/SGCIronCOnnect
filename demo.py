@@ -56,7 +56,19 @@ def run_demo():
     try:
         screen = BaseScreen(driver, "framework/config/order_processing_screen.yaml", "order_entry_main")
         
-        print("Verifying Screen State...")
+        print("Verifying Sign On...")
+        # (Simulated login logic here)
+        
+        print("Checking for optional Sign-on Information screen...")
+        # Specific handler for optional info screen
+        info_screen = BaseScreen(driver, "framework/config/signon_info_screen.yaml", "signon_info")
+        if info_screen.matches():
+            print("Optional 'Sign-on Information' screen detected. Sending 'Enter' to bypass.")
+            driver.send_keys("Enter")
+        else:
+            print("Sign-on Information screen not present, skipping.")
+            
+        print("Verifying Main Order Entry Screen...")
         screen.verify()  # This runs the indicators and executes the handlers
         
         print("Verification Successful!")

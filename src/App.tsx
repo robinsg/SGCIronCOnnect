@@ -106,7 +106,7 @@ export default function App() {
             <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center border border-green-500/20">
               <Terminal className="w-5 h-5 text-green-500" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white italic">IronConnect</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white italic">SGCIronConnect</h1>
           </div>
 
           <nav className="space-y-1">
@@ -132,18 +132,18 @@ export default function App() {
               active={activeTab === 'yaml'} 
               onClick={() => setActiveTab('yaml')} 
               icon={<FileJson className="w-4 h-4" />}
-              label="YAML Config" 
+              label="Scaling Strategy" 
             />
           </nav>
         </div>
 
         <div className="mt-auto p-6 space-y-4">
-          <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/10 active:scale-95 transition-transform cursor-pointer" onClick={runVerification}>
+          <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/10 active:scale-95 transition-transform cursor-pointer" onClick={runVerification}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-widest text-green-500 font-bold">System Status</span>
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] uppercase tracking-widest text-blue-500 font-bold">LPAR Status</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             </div>
-            <p className="text-xs text-gray-400">All services operational. Node 5250 active.</p>
+            <p className="text-xs text-gray-400">SafeGuaranteed verification session active.</p>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function App() {
             />
           )}
           {activeTab === 'code' && <CodeViewer key="code" />}
-          {activeTab === 'yaml' && <YamlViewer key="yaml" />}
+          {activeTab === 'yaml' && <ScalingViewer key="yaml" />}
         </AnimatePresence>
       </main>
     </div>
@@ -193,28 +193,28 @@ function Overview() {
       className="space-y-12"
     >
       <header className="space-y-4">
-        <h2 className="text-4xl font-light text-white tracking-tight">Enterprise IBM i <span className="text-green-500 italic">Automation</span></h2>
+        <h2 className="text-4xl font-light text-white tracking-tight">SafeGuarded Copy <span className="text-blue-400 italic">Validation</span></h2>
         <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
-          IronConnect is a modular Python framework designed for robust screen-handling on IBM i systems. 
-          It bridges the gap between legacy terminals and modern DevOps with a plugin-based handler architecture.
+          SGCIronConnect is an enterprise-grade automation framework for IBM i terminal sessions, 
+          specifically optimized for verifying system integrity after <strong>IBM FlashSystem SafeGuarded Copy</strong> snapshot restores.
         </p>
       </header>
 
       <div className="grid grid-cols-3 gap-6">
         <FeatureCard 
-          icon={<ShieldCheck className="w-5 h-5 text-green-500" />}
-          title="State Machine"
-          description="Mandatory screen-state verification guards every interaction against race conditions and network lag."
+          icon={<ShieldCheck className="w-5 h-5 text-blue-400" />}
+          title="Rapid Validation"
+          description="Automate 5250 login and status verification on cloned LPARs in seconds, reducing RTO for snapshot testing."
         />
         <FeatureCard 
-          icon={<Search className="w-5 h-5 text-green-500" />}
-          title="Plugin Handlers"
-          description="Extensible handler registry for text search, number extraction, and pattern matching within regional screen blocks."
+          icon={<Search className="w-5 h-5 text-blue-400" />}
+          title="Data-Driven Handlers"
+          description="No Python code required for new screens. Simply define indicators and extraction handlers in YAML."
         />
         <FeatureCard 
-          icon={<Hash className="w-5 h-5 text-green-500" />}
-          title="Robot Framework"
-          description="Full integration with Robot Framework allows writing terminal tests in natural, human-readable language."
+          icon={<Hash className="w-5 h-5 text-blue-400" />}
+          title="Snapshot Guard"
+          description="Verify subsystem availability, storage utilization, and TCP/IP stack health post-restore automatically."
         />
       </div>
 
@@ -223,10 +223,10 @@ function Overview() {
         <div className="relative p-8 rounded-2xl bg-white/2 border border-white/5 backdrop-blur-3xl">
           <div className="flex flex-col gap-4">
             <ArchLayer level={4} title="Orchestration" desc="Robot Framework Library (IBMiLibrary)" />
-            <ArchLayer level={3} title="Page Objects" desc="BaseScreen & Specific Screen Definitions" />
-            <ArchLayer level={2} title="Handler Engine" desc="HandlerRegistry & Modular Plugins" />
+            <ArchLayer level={3} title="Generic Verification" desc="BaseScreen: 1 Class handles 100+ screens" />
+            <ArchLayer level={2} title="Snapshot Intelligence" desc="Regional Buffer Handlers for Numeric Data" />
             <ArchLayer level={1} title="Terminal Driver" desc="TmuxDriver & libtmux session control" />
-            <ArchLayer level={0} title="Emulator" desc="tn5250 binary running in tmux" />
+            <ArchLayer level={0} title="Emulator" desc="tn5250 binary (Map: 285)" />
           </div>
         </div>
       </div>
@@ -268,67 +268,71 @@ function TerminalEmulator({ isVerifying, verificationResult, onVerify }: any) {
     >
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-2xl font-medium text-white">Live <span className="text-green-500">Emulator</span> View</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">Visualising the real-time buffer capture and handler execution.</p>
+          <h2 className="text-2xl font-medium text-white">Verification <span className="text-blue-400">Terminal</span></h2>
+          <p className="text-sm text-gray-500 leading-relaxed">Simulated 5250 session verifying a SafeGuarded Copy snapshot.</p>
         </div>
         <button 
           onClick={onVerify}
           disabled={isVerifying}
-          className="flex items-center gap-2 px-6 py-2.5 bg-green-500 text-black font-bold text-sm rounded-lg hover:bg-green-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white font-bold text-sm rounded-lg hover:bg-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
         >
-          {isVerifying ? <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-          RUN VERIFICATION
+          {isVerifying ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+          START VALIDATION
         </button>
       </div>
 
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-8 relative">
           <div className="p-1 rounded-xl bg-gray-900 border border-gray-800 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 terminal-scanline" />
-            <div className="p-8 font-mono text-[13px] leading-none whitespace-pre bg-black/80 rounded-lg overflow-x-auto text-green-500 terminal-glow custom-scrollbar">
+            <div className="absolute inset-0 terminal-scanline opacity-20" />
+            <div className="p-8 font-mono text-[13px] leading-none whitespace-pre bg-black/80 rounded-lg overflow-x-auto text-blue-300 terminal-glow custom-scrollbar">
               {MOCK_BUFFER.map((line, i) => (
-                <div key={i} className="hover:bg-green-500/5 px-2 -mx-2">{line}</div>
+                <div key={i} className="hover:bg-blue-500/5 px-2 -mx-2">{line}</div>
               ))}
             </div>
           </div>
           <div className="mt-4 flex items-center gap-4 text-[10px] uppercase tracking-widest text-gray-600 font-mono">
             <span>READY</span>
             <div className="w-1 h-1 rounded-full bg-gray-600" />
-            <span>TN5250 SESSION 01</span>
+            <span>LPAR CLONE 07</span>
             <div className="w-1 h-1 rounded-full bg-gray-600" />
-            <span>80x24 characters</span>
+            <span>SGC SNAPSHOT CHECK</span>
           </div>
         </div>
 
         <div className="col-span-4 space-y-6">
           <div className="p-6 rounded-2xl border border-white/5 bg-white/2 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">Active Handlers</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">Node Analysis</h3>
             <div className="space-y-3">
               <HandlerStatus 
-                name="find_error" 
-                type="Search" 
+                name="SGC_ID_VERIFY" 
+                type="Match" 
                 status={verificationResult ? 'success' : isVerifying ? 'loading' : 'idle'}
-                detail={verificationResult?.handlers.find_error.found ? "Found!" : "No errors"}
+                detail={verificationResult ? "Verified" : "Pending"}
               />
               <HandlerStatus 
-                name="extract_total" 
-                type="Number" 
+                name="EXTRACT_TOTAL" 
+                type="Metrics" 
                 status={verificationResult ? 'success' : isVerifying ? 'loading' : 'idle'}
-                detail={verificationResult ? `£${verificationResult.handlers.extract_total.value}` : "Pending"}
+                detail={verificationResult ? `1234.56` : "Scanning"}
               />
             </div>
           </div>
 
           <div className="p-6 rounded-2xl border border-white/5 bg-white/2 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">Screen Verification</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Indicators Found</span>
-                <span className="text-white font-mono">3 / 3</span>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">Session Config</h3>
+            <div className="space-y-2 font-mono text-[10px]">
+              <div className="flex justify-between border-b border-white/5 pb-1">
+                <span className="text-gray-500">Transport:</span>
+                <span className="text-blue-400">tn5250 bin (mux)</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Input Inhibited</span>
-                <span className="text-green-500 font-mono">FALSE</span>
+              <div className="flex justify-between border-b border-white/5 pb-1">
+                <span className="text-gray-500">Map:</span>
+                <span className="text-blue-400">285</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">SSL:</span>
+                <span className="text-green-500">ENABLED</span>
               </div>
             </div>
           </div>
@@ -343,18 +347,18 @@ function HandlerStatus({ name, type, status, detail }: { name: string, type: str
     <div className="flex items-center justify-between group">
       <div className="flex items-center gap-3">
         <div className={`w-1.5 h-1.5 rounded-full ${
-          status === 'success' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 
+          status === 'success' ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]' : 
           status === 'loading' ? 'bg-yellow-500 animate-pulse' : 'bg-gray-700'
         }`} />
         <div>
           <div className="text-[11px] font-bold text-gray-300 flex items-center gap-2">
             {name}
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-gray-500 font-normal">{type}</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-gray-500 font-normal">{type}</span>
           </div>
           <div className="text-[10px] text-gray-500 font-mono mt-1">{detail}</div>
         </div>
       </div>
-      {status === 'success' && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+      {status === 'success' && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
     </div>
   );
 }
@@ -368,49 +372,39 @@ function CodeViewer() {
       className="space-y-6"
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl text-white font-medium">Foundational <span className="text-green-500">Python</span> Structure</h2>
+        <h2 className="text-2xl text-white font-medium">Generic <span className="text-blue-400">BaseScreen</span> Logic</h2>
         <div className="flex items-center gap-4 text-xs font-mono text-gray-500">
-          <span>PEP8 COMPLIANT</span>
-          <span>TYPE HINTED</span>
+          <span>PEP8 Compliant</span>
+          <span>Scalable</span>
         </div>
       </div>
 
       <div className="rounded-2xl overflow-hidden border border-white/5 bg-[#111111]">
         <div className="flex items-center px-4 py-3 bg-white/2 border-b border-white/5 gap-2">
-          <Terminal className="w-3.5 h-3.5 text-green-500" />
-          <span className="text-xs font-mono text-gray-400">framework/core/terminal_driver.py</span>
+          <Terminal className="w-3.5 h-3.5 text-blue-400" />
+          <span className="text-xs font-mono text-gray-400">framework/core/base_screen.py</span>
         </div>
-        <pre className="p-6 overflow-x-auto text-sm font-mono text-blue-300 custom-scrollbar leading-relaxed">
-{`import libtmux
-from .exceptions import TerminalTimeoutError
+        <pre className="p-6 overflow-x-auto text-sm font-mono text-blue-200 custom-scrollbar leading-relaxed">
+{`class BaseScreen:
+    """One class to rule them all (screens)."""
+    def __init__(self, driver, yaml_path, screen_key):
+        self.driver = driver
+        # Loads ANY screen definition from ANY yaml file
+        self.config = load_yaml(yaml_path).get(screen_key)
+        self.indicators = self.config.get('indicators', [])
 
-class TmuxDriver:
-    """Driver for managing a tn5250 session within tmux."""
-
-    def __init__(self, host: str = "localhost", port: int = 23):
-        self.server = libtmux.Server()
-        self.session_name = "tn5250_session"
-        self.pane = None
-
-    def start_session(self):
-        """Launches the tn5250 session in tmux."""
-        tn_cmd = f"tn5250 {self.host}:{self.port}"
-        self.session = self.server.new_session(
-            session_name=self.session_name,
-            window_command=tn_cmd
-        )
-        self.pane = self.session.active_window.active_pane
-
-    def get_buffer(self) -> List[str]:
-        """Captures the current visual buffer."""
-        return self.pane.cmd('capture-pane', '-p').stdout`}
+    def verify(self):
+        """Standardized verification logic for 100+ screens."""
+        buffer = self.driver.get_buffer()
+        for ind in self.indicators:
+            self._check_indicator(ind, buffer)`}
         </pre>
       </div>
     </motion.div>
   );
 }
 
-function YamlViewer() {
+function ScalingViewer() {
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }} 
@@ -419,18 +413,51 @@ function YamlViewer() {
       className="space-y-6"
     >
       <div className="space-y-2">
-        <h2 className="text-2xl text-white font-medium">YAML Schema <span className="text-green-500">Configuration</span></h2>
-        <p className="text-sm text-gray-400 leading-relaxed">Decoupling screen coordinates from Python logic via external definitions.</p>
+        <h2 className="text-2xl text-white font-medium">Workflow <span className="text-blue-400">Navigation</span></h2>
+        <p className="text-sm text-gray-400 leading-relaxed">Chaining screens through verification and control key sequences.</p>
       </div>
 
-      <div className="rounded-2xl overflow-hidden border border-white/5 bg-[#111111]">
-        <div className="flex items-center px-4 py-3 bg-white/2 border-b border-white/5 gap-2">
-          <FileJson className="w-3.5 h-3.5 text-yellow-500" />
-          <span className="text-xs font-mono text-gray-400">framework/config/order_screen.yaml</span>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="p-8 rounded-2xl bg-white/2 border border-white/5 flex flex-col gap-6">
+          <div className="space-y-2">
+            <h4 className="text-white font-semibold">Granular Control Keys</h4>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Navigation is handled by the <code className="text-blue-400">Press Key</code> keyword. 
+              This sends terminal signals for Enter, F3, PgUp, and even specialized IBM i keys like FieldExit.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {['Enter', 'F3', 'F12', 'PgUp', 'PgDn', 'FieldExit'].map(k => (
+              <div key={k} className="px-3 py-2 rounded bg-black/40 border border-white/5 text-[10px] text-blue-300 font-mono text-center">
+                {k}
+              </div>
+            ))}
+          </div>
         </div>
-        <pre className="p-6 overflow-x-auto text-sm font-mono text-yellow-200/80 custom-scrollbar leading-relaxed">
-          {YAML_EXAMPLE}
-        </pre>
+
+        <div className="p-8 rounded-2xl bg-white/2 border border-white/5 flex flex-col justify-center gap-6">
+          <div className="space-y-2">
+            <h4 className="text-white font-semibold">Chained Verification Workflow</h4>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Verifying 30+ screens is simply a matter of checking state, interacting, and moving to the next.
+            </p>
+          </div>
+          <div className="p-4 rounded-lg bg-black/40 font-mono text-[9px] text-green-400 border border-white/5 leading-relaxed">
+            # Full Snapshot Restoration Test<br/>
+            Verify Screen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;login<br/>
+            Type Text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;&nbsp;QSECOFR<br/>
+            Press Key&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enter<br/>
+            <br/>
+            # Handle optional IBM i info screen<br/>
+            Handle Optional Signon Info<br/>
+            <br/>
+            Verify Screen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;main_menu<br/>
+            Type Text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cmd&nbsp;&nbsp;'WRKSYSSTS'<br/>
+            Press Key&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enter<br/>
+            <br/>
+            Verify Screen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sys_status_check
+          </div>
+        </div>
       </div>
     </motion.div>
   );

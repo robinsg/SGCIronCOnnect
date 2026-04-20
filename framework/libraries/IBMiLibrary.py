@@ -22,22 +22,56 @@ class IBMiLibrary:
         self.driver.start_session()
         logger.info(f"Initialised connection to {host}:{port} (SSL={ssl})")
 
-    def verify_and_interact_with_screen(self, config_path: str, screen_key: str, data: Optional[Dict] = None):
-        """Verifies screen and optionally fills fields."""
+    def verify_screen(self, config_path: str, screen_key: str):
+        """Verifies the current screen against its YAML definition."""
         if not self.driver:
             raise RuntimeError("Driver not initialised.")
         
         screen = BaseScreen(self.driver, config_path, screen_key)
         screen.verify()
         self.current_screen = screen
-        
-        if data:
-            for field, value in data.items():
-                screen.fill_field(field, value)
-        
-        logger.info(f"Verified and interacted with screen: {screen.screen_name}")
+        logger.info(f"Successfully verified screen: {screen.screen_name}")
 
-    def get_screen_handler_result(self, handler_name: str) -> Dict:
+    def type_text(self, field_name: str, value: str):
+        """Types text into a defined field without sending Enter."""
+        if not self.current_screen:
+            raise RuntimeError("No active screen context. Call 'Verify Screen' first.")
+        self.current_screen.fill_field(field_name, value)
+        logger.info(f"Typed '{value}' into field '{field_name}'")
+
+    def press_key(self, key_name: str):
+        """Sends a control key like Enter, F3, F12, PgUp, PgDn, or FieldExit."""
+        if not self.driver:
+            raise RuntimeError("Driver not initialised.")
+        
+        # 'FieldExit' is often a combination or specific sequence in tn5250
+        # Here we use the driver's send_keys mapping
+        self.driver.send_keys(key_name, enter=True)
+        logger.info(f"Pressed control key: {key_name}")
+
+    def bypass_optional_screen(self, config_path: str, screen_key: str, control_key: str = "Enter"):
+        """
+        Checks if an optional screen is present; if so, sends the control key to bypass it.
+        Does nothing if the screen is not detected.
+        """
+        if not self.driver:
+            raise RuntimeError("Driver not initialised.")
+        
+        screen = BaseScreen(self.driver, config_path, screen_key)
+        if screen.matches():
+            logger.info(f"Optional screen '{screen_key}' detected. Bypassing with '{control_key}'...")
+            self.driver.send_keys(control_key, enter=True)
+        else:
+            logger.info(f"Optional screen '{screen_key}' not detected. Continuing...")
+
+    def handle_optional_signon_info(self):
+        """
+        Specific keyword to handle the IBM i Sign-on Information screen if it appears.
+        """
+        config = "framework/config/signon_info_screen.yaml"
+        self.bypass_optional_screen(config, "signon_info", "Enter")
+
+    def close_connection(self):
         """Retrieves result from last executed screen handler."""
         if not self.current_screen:
             raise RuntimeError("No screen context.")
