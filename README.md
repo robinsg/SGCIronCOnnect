@@ -18,13 +18,47 @@ The framework requires the following system binaries:
 1. **Clone the repository** (or copy the framework files).
 2. **Install system dependencies**:
    ```bash
-   # On Debian/Ubuntu
-   sudo apt-get update && sudo apt-get install -y tmux tn5250
+   # On Debian/Ubuntu (tn5250 is no longer available via apt)
+   sudo apt-get update
+   sudo apt-get install -y build-essential autoconf automake libtool libncurses5-dev libssl-dev git
+   
+   # Build tn5250 from source
+   git clone https://github.com/tn5250/tn5250.git
+   cd tn5250
+   ./autogen.sh
+   ./configure
+   make
+   sudo make install
+   sudo ldconfig
+   
+   # Install tmux
+   sudo apt-get install -y tmux
    ```
 3. **Install Python dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
+
+## Web Application
+
+The project includes a React-based web interface built with Vite for monitoring and interacting with the automation framework.
+
+### Running the Web Application
+
+1. **Install Node.js dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Access the application**:
+   Open your browser and navigate to `http://localhost:3000` (or the network URL displayed in the terminal output). The server runs on port 3000 and is accessible from the network.
+
+The web interface provides a visual dashboard showing terminal session status, framework operations, and system information.
 
 ## Deployment Instructions
 
