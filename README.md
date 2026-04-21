@@ -125,27 +125,7 @@ Verify Storage Snapshot
     Close Connection
 ```
 
-### 2. Python API
-Use the `P5250Client` directly for custom scripts.
-
-```python
-from framework.core.p5250_client import P5250Client
-
-client = P5250Client(host_name="10.0.0.5", enable_tls=True)
-client.connect()
-
-if client.is_connected():
-    client.send_text("WRKSYSSTS")
-    client.send_enter()
-    
-    # Read text at specific coordinates
-    cpu_usage = client.read_text_at_position(row=1, col=70, length=5)
-    print(f"Current CPU: {cpu_usage}%")
-    
-client.disconnect()
-```
-
-### 3. Command Line Demo
+### 2. Command Line Demo
 You can run the included demo script to see a simulated workflow:
 ```bash
 python3 demo.py
