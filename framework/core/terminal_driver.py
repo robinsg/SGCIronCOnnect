@@ -13,15 +13,15 @@ class TmuxDriver:
 
     def __init__(self, 
                  session_name: str = "tn5250_session", 
-                 host: str = "localhost", 
-                 port: int = 23, 
-                 map_value: int = 285,
-                 ssl: bool = False):
+                 host_name: str = "localhost", 
+                 host_port: int = 23, 
+                 code_page: int = 285,
+                 enable_tls: bool = False):
         self.session_name = session_name
-        self.host = host
-        self.port = port
-        self.map_value = map_value
-        self.ssl = ssl
+        self.host_name = host_name
+        self.host_port = host_port
+        self.code_page = code_page
+        self.enable_tls = enable_tls
         self.server = libtmux.Server()
         self.session: Optional[libtmux.Session] = None
         self.pane: Optional[libtmux.Pane] = None
@@ -34,8 +34,8 @@ class TmuxDriver:
             self.server.kill_session(self.session_name)
 
         # Build tn5250 command
-        ssl_prefix = "ssl:" if self.ssl else ""
-        tn_cmd = f"tn5250 {ssl_prefix}{self.host}:{self.port} map={self.map_value}"
+        ssl_prefix = "ssl:" if self.enable_tls else ""
+        tn_cmd = f"tn5250 {ssl_prefix}{self.host_name}:{self.host_port} map={self.code_page}"
         
         self.session = self.server.new_session(
             session_name=self.session_name,

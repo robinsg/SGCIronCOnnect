@@ -78,7 +78,7 @@ const YAML_EXAMPLE = `order_entry_main:
       required: true`;
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'terminal' | 'code' | 'yaml'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'terminal' | 'code' | 'yaml' | 'deployment'>('overview');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<any>(null);
 
@@ -117,6 +117,12 @@ export default function App() {
               label="Architecture" 
             />
             <NavItem 
+              active={activeTab === 'deployment'} 
+              onClick={() => setActiveTab('deployment')} 
+              icon={<Settings className="w-4 h-4" />}
+              label="Deployment" 
+            />
+            <NavItem 
               active={activeTab === 'terminal'} 
               onClick={() => setActiveTab('terminal')} 
               icon={<Terminal className="w-4 h-4" />}
@@ -152,6 +158,7 @@ export default function App() {
       <main className="ml-64 p-12 max-w-6xl">
         <AnimatePresence mode="wait">
           {activeTab === 'overview' && <Overview key="overview" />}
+          {activeTab === 'deployment' && <DeploymentViewer key="deployment" />}
           {activeTab === 'terminal' && (
             <TerminalEmulator 
               key="terminal" 
@@ -255,6 +262,79 @@ function ArchLayer({ level, title, desc }: { level: number, title: string, desc:
         <span className="text-xs text-gray-500 italic">{desc}</span>
       </div>
     </div>
+  );
+}
+
+function DeploymentViewer() {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-8"
+    >
+      <div className="space-y-2">
+        <h2 className="text-2xl text-white font-medium">Deployment & <span className="text-blue-400">Invocation</span></h2>
+        <p className="text-sm text-gray-400 leading-relaxed">Step-by-step instructions for integrating the framework into your IBM i environment.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">1. System Setup</h3>
+            <div className="p-6 rounded-2xl bg-white/2 border border-white/5 space-y-4">
+              <p className="text-xs text-gray-400">Install required binaries on your automation host:</p>
+              <div className="bg-black/40 p-4 rounded-lg font-mono text-[10px] text-blue-300 border border-white/5">
+                sudo apt-get install tmux tn5250<br/>
+                pip install -r requirements.txt
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">2. Connection Patterns</h3>
+            <div className="p-6 rounded-2xl bg-white/2 border border-white/5 space-y-3">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="w-4 h-4 text-green-500" />
+                <span className="text-xs text-gray-300">SSL/TLS Enabled by default</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Database className="w-4 h-4 text-blue-400" />
+                <span className="text-xs text-gray-300">Default Code Page: 285</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className="space-y-6">
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">3. Invocation Example</h3>
+            <div className="p-6 rounded-2xl bg-white/2 border border-white/5 space-y-4">
+              <p className="text-xs text-gray-400">Robot Framework Task Definition:</p>
+              <div className="bg-black/40 p-4 rounded-lg font-mono text-[10px] text-green-400 border border-white/5 overflow-x-auto whitespace-pre leading-relaxed">
+{`Verify Snapshot Restore
+    Initialize Connection    host=10.0.0.1
+    Verify Screen            login.yaml    login
+    Type Text                user          ADMIN
+    Press Key                Enter
+    Handle Optional Signon Info
+    Verify Screen            main.yaml     main_menu`}
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">4. Run Validation</h3>
+            <div className="p-6 rounded-2xl bg-white/2 border border-white/5 space-y-4">
+              <p className="text-xs text-gray-400">Execute from your automation host terminal:</p>
+              <div className="bg-black/40 p-4 rounded-lg font-mono text-[10px] text-blue-300 border border-white/5">
+                robot tests/verify_snapshot.robot
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
