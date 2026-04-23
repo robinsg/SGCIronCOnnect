@@ -1,0 +1,20 @@
+screen_name: "SIGNON"
+
+identifiers:
+  - "System  . . . . . :"
+  - "User  . . . . . . . . . . . . . :"
+  - "Password  . . . . . . . . . . . :"
+  - "(C) COPYRIGHT IBM CORP."
+
+fields:
+  user:
+    row: 6
+    col: 52
+    length: 10
+  password:
+    row: 7
+    col: 52
+    length: 10
+
+wait_conditions:
+  inhibited_state_string: "Input Inhibited"
