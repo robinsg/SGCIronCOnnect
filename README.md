@@ -80,9 +80,10 @@ The framework can be configured via environment variables. These are used as def
 Ensure your project follows this structure:
 ```text
 project_root/
-├── framework/           # Core engine
-├── config/              # YAML Screen definitions
-└── tests/               # Robot Framework .robot files
+├── framework/             # Core engine
+├── config/                # YAML Screen definitions
+├── verification_scripts/  # Production Robot Framework .robot files
+└── tests/                 # Unit and system test scripts
 ```
 
 ### 2. Configuration
@@ -138,13 +139,13 @@ Once deployed and configured, you can execute your Robot Framework tests using t
 ### 1. Simple Execution
 Run a single `.robot` file from the terminal:
 ```bash
-robot tests/verify_snapshot.robot
+robot verification_scripts/verify_snapshot.robot
 ```
 
 ### 2. Execution with Environment Variables
 You can pass connection settings directly at runtime via environment variables:
 ```bash
-IBMI_HOST=10.0.0.5 IBMI_USER=OPERATOR robot tests/verify_snapshot.robot
+IBMI_HOST=10.0.0.5 IBMI_USER=OPERATOR robot verification_scripts/verify_snapshot.robot
 ```
 
 ### 3. Reporting
