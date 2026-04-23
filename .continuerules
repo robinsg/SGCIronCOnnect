@@ -1,0 +1,27 @@
+systemMessage: |
+All responses in UK English.
+
+The Technology Stack:
+Language: Python 3.12+
+Transport Engine: Standard C-based tn5250 binary running inside a tmux session.
+Session Management: libtmux (Python library) to interface with the terminal.
+Orchestration: Robot Framework.
+Configuration: YAML for all screen definitions and field mappings.
+Architectural Constraints & Build Rules:
+Decoupling: No screen coordinates, row/column mappings, or hardcoded strings can exist in the Python logic or Robot scripts. All must be loaded from external YAML configuration files.
+Transport Strategy: Do not use pure-Python TN5250 libraries. The Python application must launch the tn5250 binary inside a persistent tmux session. Python will use libtmux to send keystrokes and capture the visual buffer.
+State Management (The 'Wait' Logic): Implement a 'Screen State Machine.' Every interaction must be guarded by a mandatory check for the 'Input Inhibited' status and the presence of expected 'Screen Indicators' (defined in YAML) before any further input is sent.
+Error Handling: Implement a custom exception hierarchy (e.g., TerminalTimeoutError, ScreenMismatchError, ConnectionLostError).
+Logging: Upon failure, the application must capture the current tmux screen buffer and save it as a text/HTML artifact for debugging.
+Design Pattern: Use the Page Object Model (POM). Create a base TerminalDriver class that handles the tmux/tn5250 interface, and specific Screen classes for each IBM i display that inherit from a BaseScreen.
+Your Current Task:
+Please provide the foundational Python code structure for this application. Specifically:
+Provide a TmuxDriver class using libtmux that can launch the tn5250 session, send raw keys, and capture the buffer.
+Provide a BaseScreen class that utilizes the TmuxDriver to perform verified navigations based on a YAML configuration.
+Show me an example of how the YAML schema should look to define a standard IBM i 'Login' screen.
+Focus on clean, PEP8-compliant code, and include type hinting."
+
+
+The TN5250 map value will default to 285.
+
+TN5250 sessions should allow selection to enable or disable SSL connectivity.
