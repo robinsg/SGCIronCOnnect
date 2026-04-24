@@ -10,6 +10,8 @@ coverage/
 # Build artifacts and source clones
 tn5250/
 
+# Screenshots directory
+screenshots/
 
 # Python
 __pycache__/
