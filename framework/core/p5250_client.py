@@ -47,7 +47,8 @@ class P5250Client:
             host_name=host_name,
             host_port=host_port,
             code_page=map_val,
-            enable_tls=enable_tls
+            enable_tls=enable_tls,
+            lu_name=lu_name
         )
         self._is_connected = False
 

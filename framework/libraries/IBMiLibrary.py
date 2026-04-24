@@ -5,6 +5,8 @@ from typing import Optional, Dict, Any
 from robot.api import logger
 from ..core.p5250_client import P5250Client
 from ..core.base_screen import BaseScreen
+from ..core.branding import ROBOT_FRAMEWORK_LOGO
+from ..screens.hmc_console_screen import HMCConsoleScreen
 
 class IBMiLibrary:
     """
@@ -119,6 +121,35 @@ class IBMiLibrary:
             self.client.disconnect()
             self.client = None
             logger.info("Connection closed.")
+
+    def connect_to_lpar_via_hmc(self, hmc_host, hmc_user, hmc_password, partition_name, ssl=True):
+        """
+        Specialised keyword to connect to an IBM i LPAR console via HMC proxy.
+        """
+        # HMC 5250 proxy typically uses port 992 (SSL) and expects partition name as LU
+        self.initialize_connection(host=hmc_host, ssl=ssl, lu_name=partition_name)
+
+        hmc_screen = HMCConsoleScreen(self.client._driver)
+        logger.info(f"Logging into HMC {hmc_host}...")
+        hmc_screen.login(hmc_user, hmc_password)
+
+        # In some HMC versions, you might need to select the partition
+        # For now, we assume direct proxying based on LU name if configured,
+        # or manual navigation if not.
+        logger.info(f"Navigating to partition {partition_name} console...")
+        # hmc_screen.select_partition(partition_name)
+
+    def verify_robot_framework_logo(self):
+        """
+        Verifies that the Robot Framework ASCII logo is present on the current screen.
+        """
+        screen_content = self.get_screen()
+        # Check for a unique part of the logo
+        if "ROBOT FRAMEWORK" in screen_content:
+            logger.info("Robot Framework logo detected on screen.")
+            print(ROBOT_FRAMEWORK_LOGO)
+        else:
+            raise RuntimeError("Robot Framework logo not found on screen.")
 
     # --- P5250Client Wrapper Keywords ---
 
