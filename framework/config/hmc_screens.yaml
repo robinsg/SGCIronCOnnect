@@ -1,21 +1,48 @@
 # framework/config/hmc_screens.yaml
 
+hmc_language_selection:
+  screen_name: "HMC Language Selection"
+  indicators:
+    - "Welcome to Remote 5250 Console"
+    - "Select one of the following and press Enter"
+  fields:
+    language:
+      tabs_to_reach: 0
+
 hmc_login:
   screen_name: "HMC Login"
   indicators:
-    - "Hardware Management Console"
-    - "Login"
+    - "Remote 5250 Console Sign on"
+    - "Enter your management console userid and password"
   fields:
     user:
       tabs_to_reach: 0
     password:
       tabs_to_reach: 1
 
-hmc_partition_selection:
-  screen_name: "Partition Selection"
+hmc_system_selection:
+  screen_name: "HMC System Selection"
   indicators:
-    - "Partition Selection"
-    - "Select a partition"
+    - "Remote 5250 Console System Selection"
+  fields:
+    system:
+      tabs_to_reach: 0
+
+hmc_partition_selection:
+  screen_name: "HMC Partition Selection"
+  indicators:
+    - "Remote 5250 Console Partition Selection"
   fields:
     selection:
       tabs_to_reach: 0
+
+hmc_session_key:
+  screen_name: "HMC Session Key"
+  indicators:
+    - "Remote 5250 Console Session Key"
+    - "A session key is required"
+  fields:
+    key:
+      tabs_to_reach: 0
+    verify_key:
+      tabs_to_reach: 1

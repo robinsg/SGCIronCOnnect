@@ -122,22 +122,34 @@ class IBMiLibrary:
             self.client = None
             logger.info("Connection closed.")
 
-    def connect_to_lpar_via_hmc(self, hmc_host, hmc_user, hmc_password, partition_name, ssl=True):
+    def connect_to_lpar_via_hmc(self, hmc_host, hmc_user, hmc_password, partition_name,
+                                session_key=None, hmc_system="1", language="23", ssl=True):
         """
         Specialised keyword to connect to an IBM i LPAR console via HMC proxy.
+        Follows the full sequence: Language -> Login -> System -> Partition -> Session Key.
         """
-        # HMC 5250 proxy typically uses port 992 (SSL) and expects partition name as LU
-        self.initialize_connection(host=hmc_host, ssl=ssl, lu_name=partition_name)
+        self.initialize_connection(host=hmc_host, ssl=ssl)
 
         hmc_screen = HMCConsoleScreen(self.client._driver)
-        logger.info(f"Logging into HMC {hmc_host}...")
+
+        logger.info("Step 1: Selecting Language...")
+        hmc_screen.select_language(language)
+
+        logger.info(f"Step 2: Logging into HMC {hmc_host}...")
         hmc_screen.login(hmc_user, hmc_password)
 
-        # In some HMC versions, you might need to select the partition
-        # For now, we assume direct proxying based on LU name if configured,
-        # or manual navigation if not.
-        logger.info(f"Navigating to partition {partition_name} console...")
-        # hmc_screen.select_partition(partition_name)
+        logger.info(f"Step 3: Selecting System {hmc_system}...")
+        hmc_screen.select_system(hmc_system)
+
+        logger.info(f"Step 4: Selecting Partition {partition_name}...")
+        # In a production scenario, we'd need a more robust way to select the specific partition row.
+        hmc_screen.select_partition(partition_name)
+
+        if session_key:
+            logger.info("Step 5: Entering Session Key...")
+            hmc_screen.enter_session_key(session_key)
+
+        logger.info("HMC connection sequence complete. Waiting for LPAR console...")
 
     def verify_robot_framework_logo(self):
         """
