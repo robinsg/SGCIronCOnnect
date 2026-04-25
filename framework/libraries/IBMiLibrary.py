@@ -5,6 +5,8 @@ from typing import Optional, Dict, Any
 from robot.api import logger
 from ..core.p5250_client import P5250Client
 from ..core.base_screen import BaseScreen
+from ..core.branding import ROBOT_FRAMEWORK_LOGO
+from ..screens.hmc_console_screen import HMCConsoleScreen
 
 class IBMiLibrary:
     """
@@ -119,6 +121,47 @@ class IBMiLibrary:
             self.client.disconnect()
             self.client = None
             logger.info("Connection closed.")
+
+    def connect_to_lpar_via_hmc(self, hmc_host, hmc_user, hmc_password, partition_name,
+                                session_key=None, hmc_system="1", language="23", ssl=True):
+        """
+        Specialised keyword to connect to an IBM i LPAR console via HMC proxy.
+        Follows the full sequence: Language -> Login -> System -> Partition -> Session Key.
+        """
+        self.initialize_connection(host=hmc_host, ssl=ssl)
+
+        hmc_screen = HMCConsoleScreen(self.client._driver)
+
+        logger.info("Step 1: Selecting Language...")
+        hmc_screen.select_language(language)
+
+        logger.info(f"Step 2: Logging into HMC {hmc_host}...")
+        hmc_screen.login(hmc_user, hmc_password)
+
+        logger.info(f"Step 3: Selecting System {hmc_system}...")
+        hmc_screen.select_system(hmc_system)
+
+        logger.info(f"Step 4: Selecting Partition {partition_name}...")
+        # In a production scenario, we'd need a more robust way to select the specific partition row.
+        hmc_screen.select_partition(partition_name)
+
+        if session_key:
+            logger.info("Step 5: Entering Session Key...")
+            hmc_screen.enter_session_key(session_key)
+
+        logger.info("HMC connection sequence complete. Waiting for LPAR console...")
+
+    def verify_robot_framework_logo(self):
+        """
+        Verifies that the Robot Framework ASCII logo is present on the current screen.
+        """
+        screen_content = self.get_screen()
+        # Check for a unique part of the logo
+        if "ROBOT FRAMEWORK" in screen_content:
+            logger.info("Robot Framework logo detected on screen.")
+            print(ROBOT_FRAMEWORK_LOGO)
+        else:
+            raise RuntimeError("Robot Framework logo not found on screen.")
 
     # --- P5250Client Wrapper Keywords ---
 

@@ -106,7 +106,10 @@ export default function App() {
             <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center border border-green-500/20">
               <Terminal className="w-5 h-5 text-green-500" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white italic">SGCIronConnect</h1>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold tracking-tight text-white italic leading-none">SGCIronConnect</h1>
+              <span className="text-[8px] text-green-500 font-mono tracking-widest mt-1">POWERED BY ROBOT FRAMEWORK</span>
+            </div>
           </div>
 
           <nav className="space-y-1">
@@ -192,6 +195,13 @@ function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: (
 }
 
 function Overview() {
+  const logo = "           _              _ \n" +
+               "          | |            | |\n" +
+               "     _ __ | |__   ___  __| |\n" +
+               "    | '__|| '_ \\ / _ \\/ _` |\n" +
+               "    | |   | |_) | (_) \\ (_| |\n" +
+               "    |_|   |_.__/ \\___/ \\__,_|";
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} 
@@ -199,7 +209,12 @@ function Overview() {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-12"
     >
-      <header className="space-y-4">
+      <header className="space-y-4 relative">
+        <div className="absolute -top-12 -left-12 opacity-[0.03] select-none pointer-events-none">
+          <pre className="text-[10px] leading-none font-mono text-white">
+            {logo}
+          </pre>
+        </div>
         <h2 className="text-4xl font-light text-white tracking-tight">SafeGuarded Copy <span className="text-blue-400 italic">Validation</span></h2>
         <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
           SGCIronConnect is an enterprise-grade automation framework for IBM i terminal sessions, 
